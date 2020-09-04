@@ -109,6 +109,8 @@ void loop()
       lcd.print("Please wear");
       lcd.setCursor(0, 1);
       lcd.print("a mask");
+      delay(3000);
+      lcd.clear();
     }
   }
 
