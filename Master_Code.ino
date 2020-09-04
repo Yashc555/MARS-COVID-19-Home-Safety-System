@@ -24,7 +24,7 @@ void setup()
   lcd.backlight();  //open the backlight
   lcd.setCursor ( 0, 0 );            // go to the top left corner
   // write this string on the top row
-  lcd.print("Present your card");
+  lcd.print("Swipe your card");
   Serial.begin(9600);   // Initiate a serial communication
   SPI.begin();      // Initiate  SPI bus
   mfrc522.PCD_Init();   // Initiate MFRC522
@@ -34,22 +34,18 @@ void setup()
 }
 void loop()
 {
-
-  // Look for new cards
-  //  while (mask==1){
-  //
-  //  }
+  
+  lcd.setCursor(0,0);
+  lcd.print("Swipe your card");
   if ( ! mfrc522.PICC_IsNewCardPresent())
   {
     return;
   }
-  // Select one of the cards
+  
   if ( ! mfrc522.PICC_ReadCardSerial())
   {
     return;
   }
-  //Show UID on serial monitor
-  Serial.print("UID tag :");
   String content = "";
   byte letter;
   for (byte i = 0; i < mfrc522.uid.size; i++)
@@ -59,15 +55,15 @@ void loop()
     content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
     content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
-  Serial.println();
-  Serial.print("Message : ");
+
   content.toUpperCase();
-  if (content.substring(1) == "71 3A DC 73") //change here the UID of the card/cards that you want to give access
+  if (content.substring(1) == "71 3A DC 73")
   {
     lcd.clear();
-    lcd.print("Authorized access");
-    Serial.println();
+    lcd.println("Authorized access");
     delay(3000);
+    lcd.clear();
+    lcd.print("Say'Detect Mask'");
     data = "";
     while (data == "")
     {
@@ -90,14 +86,19 @@ void loop()
       cm = sonar.ping_cm();
       while (cm > 15) {
         cm = sonar.ping_cm();
-        Serial.println("CM:"+cm);
+        Serial.println(cm);
+
       }
       if (cm < 16 )
       {
+        lcd.clear();
+        lcd.print("Please Enter");
         Wire.beginTransmission(0x40);
         Wire.write("A");
         Wire.endTransmission(0x40);
-        Serial.println("Detected hand");
+        delay(5000);
+        lcd.clear();
+        lcd.print("Swipe your card");
       }
     }
 
